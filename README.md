@@ -2,7 +2,7 @@
 
 [GmsCore](https://github.com/microg/GmsCore) fork designed for ReVanced with Material You design, along with some improvements and features
 
-[![Release](https://img.shields.io/github/v/release/AykhanUV/MicroG?display_name=tag&style=for-the-badge&logo=github&labelColor=21262d&color=1f6feb)](https://github.com/AykhanUV/MicroG/releases/latest) [![Downloads](https://img.shields.io/github/downloads/AykhanUV/MicroG/total?style=for-the-badge&labelColor=21262d&color=238636)](https://github.com/AykhanUV/MicroG/releases)
+[![Release](https://img.shields.io/github/v/release/AykhanUV/MicroG?display_name=tag&style=for-the-badge&logo=github&labelColor=21262d&color=1f6feb)](https://github.com/AykhanUV/MicroG/releases/latest)
 
 **Recommended Patches**
 
