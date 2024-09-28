@@ -1,4 +1,4 @@
-# MicroG RE (MicroG Services Redesign)
+# MicroG (MicroG Services Redesign)
 
 [GmsCore](https://github.com/microg/GmsCore) fork designed for ReVanced with Material You design, along with some improvements and features
 
@@ -15,11 +15,6 @@
 [ReVanced Extended (AykhanUV)](https://github.com/AykhanUV/revanced-patches)
 
 [YT Advanced (REX)](https://github.com/YT-Advanced/ReX-patches)
-
-**Download**
-
-[<img src="https://raw.githubusercontent.com/WSTxda/QP-Gallery-Releases/master/Images/GitHub.svg"
-alt='Get it on GitHub'
 
 **Credits**
 
