@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppThemeBase" parent="Theme.Base.DayNight.NoActionBar">
+        <!-- Theming -->
+        <item name="android:textAppearanceListItem">@style/Theme.TextAppearance.PreferenceTitle</item>
+        <item name="alertDialogTheme">@style/Theme.Base.AlertDialog</item>
+        <!-- Layout padding -->
+        <item name="android:listPreferredItemHeightSmall">@dimen/settings_listPreferredItemHeightSmall</item>
+        <item name="android:listPreferredItemPaddingLeft">@dimen/settings_listPreferredItemPaddingStart</item>
+        <item name="android:listPreferredItemPaddingRight">@dimen/settings_listPreferredItemPaddingEnd</item>
+        <item name="android:listPreferredItemPaddingStart">@dimen/settings_listPreferredItemPaddingStart</item>
+        <item name="android:listPreferredItemPaddingEnd">@dimen/settings_listPreferredItemPaddingEnd</item>
+        <!-- Theme Colors -->
+        <item name="colorControlNormal">?colorOnSurfaceVariant</item>
+        <item name="android:colorAccent">?colorPrimary</item>
+        <item name="android:textColorPrimary">?colorOnSurface</item>
+        <item name="android:textColorSecondary">?colorOnSurfaceVariant</item>
+        <item name="android:textColorTertiary">?colorOutline</item>
+        <!-- Dynamic Colors -->
+        <item name="isMaterial3DynamicColorApplied">true</item>
+    </style>
+</resources>

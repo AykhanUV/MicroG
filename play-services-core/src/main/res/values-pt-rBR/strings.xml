@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SPDX-FileCopyrightText: 2017 MicroG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="gms_settings_name">Configurações do MicroG</string>
+    <string name="gms_settings_summary">Configurar o MicroG</string>
+
+    <string name="just_a_sec">Só um segundo…</string>
+    <string name="ask_permission_tos">Ao continuar, você permite que este aplicativo e o Google usem suas informações de acordo com seus respectivos termos de serviço e políticas de privacidade</string>
+    <string name="ask_scope_permission_title"><xliff:g example="F-Droid">%1$s</xliff:g> gostaria de:</string>
+    <string name="ask_service_permission_title"><xliff:g example="F-Droid">%1$s</xliff:g> gostaria de usar:</string>
+
+    <string name="pref_privacy_title">Privacidade</string>
+    <string name="pref_privacy_summary">Configurações de privacidade para autenticação e apps</string>
+    <string name="prefcat_applications">Aplicativos</string>
+    <string name="prefcat_authentication">Autenticação</string>
+
+    <string name="sorry">Desculpe…</string>
+    <string name="auth_before_connect">"Conectar a conta Google com MicroG.
+
+Vamos conectar a uma conta Google, use o botão <b>Entrar</b> ou utilize o botão <b>Huawei</b> se você possuir um dispositivo com esta marca. Ao pressionar um dos botões você será redirecionado a página para efetuar o login em sua conta."</string>
+    <string name="auth_sign_in">Entrar</string>
+    <string name="auth_connecting">"Estabelecendo conexão com os servidores do Google para fazer login.
+
+Isso pode levar alguns segundos."</string>
+    <string name="no_network_error_desc">"Você não tem uma conexão de rede.
+
+Isso pode ser um problema temporário ou seu dispositivo Android pode não ser configurado para serviços de dados. Tente novamente quando conectado a uma rede móvel ou conecte-se a uma rede Wi-Fi."</string>
+    <string name="auth_general_error_desc">"Houve um problema na comunicação com os servidores do Google.
+
+Tente de novo mais tarde."</string>
+    <string name="auth_finalize">"Seu dispositivo está entrando em contato com o Google para salvar informações em sua conta.
+
+Isso pode levar alguns minutos."</string>
+    <string name="allow">Permitir</string>
+    <string name="deny">Negar</string>
+    <string name="auth_notification_title">Autenticação necessária</string>
+    <string name="auth_notification_content"><xliff:g example="F-Droid">%1$s</xliff:g> solicita sua autorização para acessar sua conta Google</string>
+
+    <string name="signin_picker_title">Escolha uma conta</string>
+    <string name="signin_picker_subtitle">para continuar no <xliff:g example="F-Droid">%1$s</xliff:g></string>
+    <string name="signin_picker_add_account_label">Adicionar outra conta</string>
+    <string name="signin_confirm_title">Autorizar a conectar você em <xliff:g example="F-Droid">%1$s</xliff:g></string>
+    <string name="signin_confirm_button_text">Permitir e compartilhar</string>
+    <string name="signin_subtext_sharing">Para continuar, o MicroG compartilhará nome, endereço de e-mail e foto de perfil da sua Conta Google com <xliff:g example="F-Droid">%1$s</xliff:g></string>
+
+    <string name="perm_status_broadcast_label">escutar as transmissões de status internas</string>
+    <string name="perm_gsf_read_gservices_label">ler a configuração dos serviços do Google</string>
+    <string name="perm_c2dm_receive_label">escutar mensagens C2DM</string>
+    <string name="perm_c2dm_send_label">enviar mensagens C2DM para outros aplicativos</string>
+    <string name="perm_gtalk_svc_label">trocar mensagens e receber notificações de sincronização de servidores do Google</string>
+    <string name="perm_extended_access_label">Acesso estendido aos serviços do Google</string>
+
+    <string name="service_name_checkin">Registro de dispositivos</string>
+
+    <string name="network_type_mobile">Dados móveis</string>
+    <string name="network_type_wifi">Wi-Fi</string>
+    <string name="network_type_roaming">Roaming</string>
+    <string name="network_type_other">Outras redes</string>
+
+    <!-- Self check -->
+
+    <string name="self_check_cat_fake_sig">Suporte a falsificação de assinatura</string>
+    <string name="self_check_cat_gms_packages">Pacotes instalados</string>
+    <string name="self_check_cat_system">Sistema</string>
+
+    <string name="self_check_name_fake_sig_perm">O sistema tem suporte a falsificação de assinatura</string>
+    <string name="self_check_resolution_fake_sig_perm">Sua ROM não tem suporte nativo para falsificação de assinatura. Você ainda pode usar o Xposed ou outros sistemas para falsificar assinatura. Verifique a documentação sobre quais ROMs suportam falsificação de assinatura e como usar o MicroG em ROMs que não suportam</string>
+    <string name="self_check_name_perm_granted">O sistema concede a permissão para falsificar assinatura</string>
+    <string name="self_check_resolution_perm_granted">Este é um forte indicador de que a ROM suporta falsificação de assinatura, mas requer ação adicional para ativá-la. Verifique a documentação sobre quais etapas podem ser necessárias</string>
+    <string name="self_check_name_system_spoofs">Assinatura simulado pelo sistema</string>
+    <string name="self_check_resolution_system_spoofs">Verifique a documentação sobre quais etapas podem ser necessárias</string>
+
+    <string name="self_check_name_app_installed"><xliff:g example="F-Droid">%1$s</xliff:g> instalado</string>
+    <string name="self_check_resolution_app_installed">Instale o aplicativo <xliff:g example="F-Droid">%1$s</xliff:g> ou um aplicativo compatível. Verifique a documentação sobre quais aplicativos são compatíveis</string>
+    <string name="self_check_name_correct_sig">Assinatura correta do <xliff:g example="F-Droid">%1$s</xliff:g></string>
+    <string name="self_check_resolution_correct_sig">Ou o <xliff:g example="F-Droid">%1$s</xliff:g> instalado não é compatível ou a falsificação de assinatura não está ativa para ele. Verifique a documentação sobre quais aplicativos e ROMs são compatíveis</string>
+
+    <string name="self_check_name_battery_optimizations">Otimização de bateria ignorada</string>
+    <string name="self_check_resolution_battery_optimizations">Toque aqui para desativar as otimizações de bateria. Não fazer isso pode resultar em problemas no recebimento de notificações do YouTube e outros aplicativos registrados</string>
+
+    <string name="self_check_revanced_name_app_installed">Executando com <xliff:g example="F-Droid">%1$s</xliff:g></string>
+    <string name="self_check_revanced_resolution_app_installed">Aplicativos <xliff:g example="F-Droid">%1$s</xliff:g> não encontrados, compile ou instale um apk modificado</string>
+
+    <!-- Settings strings -->
+
+    <string name="prefcat_about">Sobre</string>
+
+    <string name="cond_gcm_bat_title">Otimização de bateria ativada</string>
+    <string name="cond_gcm_bat_summary">Você ativou o Cloud Messaging, mas tem otimizações de bateria ativada para os Serviços MicroG. Para que as notificações push cheguem, você deve ignorar as otimizações da bateria</string>
+    <string name="cond_gcm_bat_action">Ignorar otimizações</string>
+    <string name="cond_perm_title">Permissão ausente</string>
+
+    <string name="pref_auth_trust_google_title">Confiar no Google para permissões de aplicativos</string>
+    <string name="pref_auth_trust_google_summary">Quando desativado, o usuário é notificado antes que uma solicitação de autorização de aplicativos seja enviada ao Google. Alguns aplicativos não usarão a conta do Google se isso for desativado</string>
+    <string name="pref_auth_visible_title">Permitir que aplicativos encontrem contas</string>
+    <string name="pref_auth_visible_summary">Quando ativado, todos os aplicativos deste dispositivo poderão ver o endereço de e-mail de suas contas do Google sem autorização prévia</string>
+    <string name="pref_auth_include_android_id_title">Autenticar com o registro de dispositivos</string>
+    <string name="pref_auth_include_android_id_summary">Quando desativado, as solicitações de autenticação não serão vinculadas ao registro de dispositivos, o que permite que dispositivos não autorizados entrem, mas podem haver consequências imprevistas</string>
+    <string name="pref_auth_strip_device_name_title">Remover nome do dispositivo para autenticação</string>
+    <string name="pref_auth_strip_device_name_summary">Quando ativado, solicitações de autenticação não incluirão o nome do dispositivo, o que pode permitir que dispositivos não autorizados façam login, mas pode ter consequências imprevistas</string>
+
+    <string name="pref_checkin_enable_summary">Registre seu dispositivo nos serviços do Google e crie um identificador de dispositivo exclusivo. MicroG remove bits de identificação que não sejam o nome da sua conta do Google dos dados de registro</string>
+
+    <string name="checkin_not_registered">Não registrado</string>
+    <string name="checkin_last_registration">Último registro: <xliff:g example="Yesterday, 02:20 PM">%1$s</xliff:g></string>
+    <string name="checkin_enable_switch">Registrar dispositivo</string>
+
+    <string name="pref_info_status">Status</string>
+
+    <string name="pref_account_title">Contas</string>
+    <string name="pref_account_summary">Fazer login em uma conta Google</string>
+    <string name="pref_gcm_enable_mcs_summary">Cloud Messaging é um provedor de notificação push usado por aplicativos modificados. Para utilizar você deve habilitar o registro de dispositivos</string>
+    <string name="pref_gcm_confirm_new_apps_title">Confirmar novos apps</string>
+    <string name="pref_gcm_confirm_new_apps_summary">Perguntar antes de registrar um novo app para receber notificações push</string>
+
+    <string name="pref_about_title">Sobre o MicroG</string>
+
+    <string name="gcm_unregister_app">Revogar registro</string>
+    <string name="gcm_no_message_yet">Nenhuma mensagem recebida até agora</string>
+    <string name="gcm_last_message_at">Última mensagem: <xliff:g example="Yesterday, 02:20 PM">%1$s</xliff:g></string>
+    <string name="gcm_registered">Registrado</string>
+    <string name="gcm_registered_since">Registrado: <xliff:g example="Yesterday, 02:20 PM">%1$s</xliff:g></string>
+    <string name="gcm_unregister_confirm_title">Revogar registro do <xliff:g example="F-Droid">%1$s</xliff:g>?</string>
+    <string name="gcm_unregister_confirm_message">Alguns aplicativos não se recadastram automaticamente e/ou não oferecem uma opção para fazer manualmente. Esses aplicativos podem não funcionar corretamente caso não sejam registrados\nContinuar?</string>
+    <string name="gcm_unregister_after_deny_message">Você negou um aplicativo para se registrar notificações push que já estão registradas.\nVocê quer revogar registro agora para que ele não receba mensagens push no futuro?</string>
+    <string name="gcm_messages_counter">Mensagens: <xliff:g example="123">%1$d</xliff:g> (<xliff:g example="12345">%2$d</xliff:g> bytes)</string>
+    <string name="gcm_network_state_disconnected">Desconectado</string>
+    <string name="gcm_network_state_connected">Conectado: <xliff:g example="2 hours ago">%1$s</xliff:g></string>
+    <string name="gcm_enable_switch">Notificações push</string>
+    <string name="gcm_allow_app_popup">Permitir que <xliff:g example="F-Droid">%1$s</xliff:g> se registre para notificações push?</string>
+
+    <string name="pref_push_app_allow_register_title">Permitir registro</string>
+    <string name="pref_push_app_allow_register_summary">Permita que o aplicativo se registre para notificações push</string>
+    <string name="pref_push_app_wake_for_delivery_title">Inicie o aplicativo na mensagem push</string>
+    <string name="pref_push_app_wake_for_delivery_summary">Inicie o aplicativo em segundo plano para receber as mensagens push</string>
+    <string name="prefcat_push_apps_title">Aplicativos usando notificações push</string>
+    <string name="prefcat_push_apps_registered_title">Aplicativos registrados</string>
+    <string name="prefcat_push_apps_unregistered_title">Aplicativos não registrados</string>
+    <string name="prefcat_push_networks_title">Redes para notificações push</string>
+
+    <string name="profile_name_native">Nativo</string>
+    <string name="profile_name_real">Real</string>
+    <string name="profile_name_user">Personalizado: %s</string>
+    <string name="profile_name_auto">Automático: %s</string>
+    <string name="profile_name_system">Sistema: %s</string>
+    <string name="pref_device_registration_import_custom_profile_title">Importar perfil personalizado</string>
+    <string name="pref_device_registration_serial_title">Número de série</string>
+    <string name="pref_device_registration_import_custom_profile_summary">Importar perfil do dispositivo de um arquivo</string>
+    <string name="pref_device_registration_select_profile_title">Selecionar perfil</string>
+    <string name="pref_device_registration_device_profile_category">Perfil do dispositivo</string>
+
+    <string name="push_notifications_summary_off">DESL</string>
+    <string name="push_notifications_summary_automatic">LIG / Automático: %s</string>
+    <string name="push_notifications_summary_manual">LIG / Manual: %s</string>
+    <string name="push_notifications_summary_values_seconds">%s segundos</string>
+    <string name="push_notifications_summary_values_minutes">%s minutos</string>
+
+    <string name="pref_network_google_enabled_summary">Se desativado, todas as conexões com os servidores do Google normalmente feitas pelo MicroG serão negadas. Isso substitui as configurações específicas do serviço</string>
+    <string name="pref_network_google_enabled">Permitir a conexão aos servidores do Google</string>
+    <string name="pref_network_google_use_tor">Conectar ao Google via rede Tor</string>
+    <string name="pref_network_google_use_tor_summary">Exige que o Orbot esteja instalado\\nAinda não há suporte</string>
+
+    <!-- Account settings-->
+
+    <string name="pref_accounts_summary">Adicionar e gerenciar contas Google</string>
+    <string name="prefcat_accounts_options_title">Opções</string>
+    <string name="prefcat_accounts_login_accounts_title">Conectado em</string>
+    <string name="pref_accounts_add_account_title">Adicionar conta</string>
+    <string name="pref_accounts_manage_accounts_title">Gerenciador de contas</string>
+    <string name="pref_accounts_manage_accounts_summary">Abrir o gerenciador de contas do dispositivo</string>
+    <!-- YouTube activity-->
+    <string name="prefcat_youtube_activity">Atividades no YouTube</string>
+    <string name="pref_manage_all_history">Gerencie todo o histórico</string>
+    <string name="pref_data_in_youtube">Seus dados no YouTube</string>
+
+    <!-- Account remove dialog-->
+
+    <string name="dialog_title_remove_account">Remover conta</string>
+    <string name="dialog_message_remove_account">Tem certeza de que deseja remover esta conta?\n\nAlguns serviços e funções não estarão disponíveis\n\nSeus dados não serão perdidos</string>
+    <string name="dialog_confirm_button">Remover</string>
+    <string name="dialog_cancel_button">Cancelar</string>
+    <string name="toast_remove_account_success">Conta %s removida</string>
+
+    <!-- Settings options strings-->
+
+    <string name="developer">Desenvolvedor</string>
+    <string name="github_source">Repositório com o código fonte</string>
+    <string name="pref_hide_launcher_icon">Ocultar ícone do launcher</string>
+</resources>

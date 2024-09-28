@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ SPDX-FileCopyrightText: 2019, The Android Open Source Project
+  ~ SPDX-FileCopyrightText: 2020, microG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="25dp"
+    android:height="25dp"
+    android:tint="?attr/colorAccent"
+    android:viewportWidth="25"
+    android:viewportHeight="25">
+    <group>
+        <clip-path android:pathData="M.64.92H24.64V24.92H.64z" />
+        <group>
+            <path
+                android:fillColor="#FF1C1B1F"
+                android:pathData="M13.24 12.92l-3.9-3.9C9.16 8.83 9.07 8.6 9.07 8.32c0-0.29 0.1-0.52 0.27-0.7 0.19-0.19 0.42-0.28 0.7-0.28 0.29 0 0.52 0.1 0.7 0.28l4.6 4.6c0.1 0.1 0.17 0.2 0.22 0.32 0.04 0.12 0.06 0.24 0.06 0.38 0 0.13-0.02 0.26-0.06 0.37-0.05 0.12-0.12 0.23-0.22 0.33l-4.6 4.6c-0.18 0.18-0.41 0.27-0.7 0.27-0.28 0-0.51-0.09-0.7-0.27-0.18-0.19-0.27-0.42-0.27-0.7 0-0.29 0.1-0.52 0.27-0.7l3.9-3.9Z" />
+        </group>
+    </group>
+</vector>
