@@ -28,6 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:importantForAccessibility="no"
         android:src="@android:drawable/sym_def_app_icon" />
 
     <TextView
@@ -87,6 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:divider="@null"
         android:nestedScrollingEnabled="true"
         tools:listitem="@android:layout/simple_list_item_2" />
 </LinearLayout>

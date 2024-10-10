@@ -23,6 +23,8 @@ dependencies {
     implementation "androidx.mediarouter:mediarouter:$mediarouterVersion"
     implementation "androidx.preference:preference-ktx:$preferenceVersion"
     implementation "androidx.webkit:webkit:$webkitVersion"
+
+    // Material Components
     implementation "com.google.android.material:material:$materialVersion"
 
     // Navigation

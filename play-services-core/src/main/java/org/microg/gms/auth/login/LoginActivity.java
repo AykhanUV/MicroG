@@ -45,7 +45,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
-import androidx.preference.PreferenceManager;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewClientCompat;
 import androidx.webkit.WebViewFeature;
@@ -193,7 +192,6 @@ public class LoginActivity extends AssistantActivity {
         super.onHuaweiButtonClicked();
         state++;
         if (state == 1) {
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("pref_hide_launcher_icon", false).apply();
             if (!isSpoofingEnabled(this)) {
                 LastCheckinInfo.clear(this);
                 setSpoofingEnabled(this, true);
@@ -231,19 +229,23 @@ public class LoginActivity extends AssistantActivity {
         }
     }
 
-    private static WebView createWebView(Context context) {
-        Context themedContext = new ContextThemeWrapper(context, R.style.LoginTheme);
+    private static boolean isSystemDarkTheme(Context context) {
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+    }
 
-        WebView webView = new WebView(themedContext);
+    private static WebView createWebView(Context context) {
+        boolean systemIsDark = isSystemDarkTheme(context);
+
+        WebView webView = new WebView(context);
         webView.setVisibility(View.INVISIBLE);
         webView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         webView.setBackgroundColor(Color.TRANSPARENT);
 
-        boolean appIsDark = (themedContext.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
-
+        // Apply dark theme to WebView based on system state
         if (Build.VERSION.SDK_INT >= 29) {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                WebSettingsCompat.setForceDark(webView.getSettings(), appIsDark ? WebSettingsCompat.FORCE_DARK_ON : WebSettingsCompat.FORCE_DARK_OFF);
+                WebSettingsCompat.setForceDark(webView.getSettings(), systemIsDark ? WebSettingsCompat.FORCE_DARK_ON : WebSettingsCompat.FORCE_DARK_OFF);
             }
         }
 

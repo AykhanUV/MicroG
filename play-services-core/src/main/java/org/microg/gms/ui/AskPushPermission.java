@@ -1,13 +1,19 @@
 package org.microg.gms.ui;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.SpannedString;
 import android.text.style.StyleSpan;
 import android.view.View;
 import android.widget.TextView;
@@ -18,6 +24,11 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.android.gms.R;
 
 import org.microg.gms.gcm.GcmDatabase;
+import org.microg.gms.gcm.PushRegisterService;
+
+import static org.microg.gms.gcm.GcmConstants.EXTRA_APP;
+import static org.microg.gms.gcm.GcmConstants.EXTRA_KID;
+import static org.microg.gms.gcm.GcmConstants.EXTRA_PENDING_INTENT;
 
 public class AskPushPermission extends FragmentActivity {
     public static final String EXTRA_REQUESTED_PACKAGE = "package";
@@ -51,10 +62,8 @@ public class AskPushPermission extends FragmentActivity {
             return;
         }
 
-        View gcmView = getLayoutInflater().inflate(R.layout.ask_push_notification, null);
-
-        // Create and show the AlertDialog
         try {
+            View view = getLayoutInflater().inflate(R.layout.ask_push_notification, null);
             PackageManager pm = getPackageManager();
             final ApplicationInfo info = pm.getApplicationInfo(packageName, 0);
             String label = pm.getApplicationLabel(info).toString();
@@ -62,36 +71,29 @@ public class AskPushPermission extends FragmentActivity {
             SpannableString s = new SpannableString(raw);
             s.setSpan(new StyleSpan(Typeface.BOLD), raw.indexOf(label), raw.indexOf(label) + label.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setCancelable(false); // Disable canceling the dialog by tapping outside or pressing the back button
-            alertDialogBuilder.setView(gcmView);
-            ((TextView) gcmView.findViewById(R.id.permission_message)).setText(s);
-            gcmView.findViewById(R.id.permission_allow_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (answered) return;
-                    database.noteAppKnown(packageName, true);
-                    answered = true;
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean(EXTRA_EXPLICIT, true);
-                    resultReceiver.send(Activity.RESULT_OK, bundle);
-                    finish();
-                }
-            });
-            gcmView.findViewById(R.id.permission_deny_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (answered) return;
-                    database.noteAppKnown(packageName, false);
-                    answered = true;
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean(EXTRA_EXPLICIT, true);
-                    resultReceiver.send(Activity.RESULT_CANCELED, bundle);
-                    finish();
-                }
-            });
-            AlertDialog alertDialog = alertDialogBuilder.create();
-            alertDialog.show();
+            ((TextView) view.findViewById(R.id.permission_message)).setText(s);
+            UtilsKt.buildAlertDialog(this)
+                    .setView(view)
+                    .setPositiveButton(R.string.allow, (dialog, which) -> {
+                        if (answered) return;
+                        database.noteAppKnown(packageName, true);
+                        answered = true;
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(EXTRA_EXPLICIT, true);
+                        resultReceiver.send(Activity.RESULT_OK, bundle);
+                        finish();
+                    })
+                    .setNegativeButton(R.string.deny, (dialog, which) -> {
+                        if (answered) return;
+                        database.noteAppKnown(packageName, false);
+                        answered = true;
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(EXTRA_EXPLICIT, true);
+                        resultReceiver.send(Activity.RESULT_CANCELED, bundle);
+                        finish();
+                    })
+                    .create()
+                    .show();
         } catch (PackageManager.NameNotFoundException e) {
             finish();
         }

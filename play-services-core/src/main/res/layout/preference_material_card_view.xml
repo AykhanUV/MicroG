@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="17dp">
+        android:padding="18dp">
 
         <TextView
             android:id="@android:id/title"
@@ -25,8 +25,8 @@
             android:layout_gravity="start"
             android:ellipsize="marquee"
             android:maxLines="2"
-            tools:text="Title preference"
-            android:textAppearance="?attr/textAppearanceTitleMedium" />
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            tools:text="Title preference" />
 
         <TextView
             android:id="@android:id/summary"
@@ -35,8 +35,8 @@
             android:layout_gravity="start"
             android:layout_marginTop="8dp"
             android:maxLines="10"
-            tools:text="Summary preference"
             android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="?android:attr/textColorSecondary" />
+            android:textColor="?android:attr/textColorSecondary"
+            tools:text="Summary preference" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

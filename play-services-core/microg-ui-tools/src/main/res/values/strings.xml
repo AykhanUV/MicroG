@@ -44,7 +44,7 @@
 
     <!-- UpdateChecker tag controller-->
 
-    <string name="github_tag_version">1.1</string>
+    <string name="github_tag_version">2.0</string>
 
     <!-- Updater strings-->
 

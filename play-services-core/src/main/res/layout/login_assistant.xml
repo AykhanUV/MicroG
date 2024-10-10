@@ -56,8 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="?attr/textAppearanceDisplaySmall"
-                    android:textColor="?android:textColorPrimary"
-                    android:textStyle="bold" />
+                    android:textColor="?android:textColorPrimary" />
 
                 <FrameLayout
                     android:id="@+id/auth_content"
@@ -69,7 +68,7 @@
                         android:id="@+id/description_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+                        android:textAppearance="?android:attr/textAppearanceListItem" />
                 </FrameLayout>
 
             </LinearLayout>
