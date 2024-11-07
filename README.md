@@ -8,7 +8,7 @@
 
 [ReVanced](https://github.com/ReVanced/revanced-patches)
 
-[ReVanced Extended](https://github.com/inotia00/revanced-patches)
+[ReVanced Extended (inotia00)](https://github.com/inotia00/revanced-patches)
 
 [ReVanced Extended (anddea)](https://github.com/anddea/revanced-patches)
 
