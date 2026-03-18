@@ -12,7 +12,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PowerManager
-import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,8 +23,10 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.SwitchPreferenceCompat
 import com.google.android.gms.R
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.launch
 import org.microg.gms.checkin.CheckinPreferences
+import org.microg.gms.common.ForegroundServiceOemUtils
 import org.microg.gms.gcm.GcmDatabase
 import org.microg.gms.gcm.GcmPrefs
 import org.microg.gms.ui.settings.SettingsProvider
@@ -43,9 +44,12 @@ class SettingsFragment : ResourceSettingsFragment() {
         const val PREF_CHECKIN = "pref_checkin"
         const val PREF_ACCOUNTS = "pref_accounts"
         const val PREF_HIDE_LAUNCHER_ICON = "pref_hide_launcher_icon"
-        const val PREF_DEVELOPER = "pref_developer"
+        const val PREF_SELF_CHECK = "pref_self_check"
         const val PREF_GITHUB = "pref_github"
         const val PREF_IGNORE_BATTERY_OPTIMIZATION = "pref_ignore_battery_optimization"
+
+        private const val ACTIVITY_LAUNCHER_CONTROL = "org.microg.gms.ui.SettingsActivityLauncher"
+        private const val PREF_GITHUB_URL = "https://github.com/aykhanuv/microg"
     }
 
     private val createdPreferences = mutableListOf<Preference>()
@@ -62,9 +66,16 @@ class SettingsFragment : ResourceSettingsFragment() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         super.onCreatePreferences(savedInstanceState, rootKey)
         setupStaticPreferenceClickListeners()
+        updateLauncherIconSwitchState()
+        updateBatteryOptimizationPreference()
         updateAboutSummary()
         loadStaticEntries()
-        updateBatteryOptimizationPreference()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        exitTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
+        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     }
 
     override fun onResume() {
@@ -72,7 +83,7 @@ class SettingsFragment : ResourceSettingsFragment() {
         activity?.findViewById<ExtendedFloatingActionButton>(R.id.preference_fab)?.visibility =
             View.GONE
         updateBatteryOptimizationPreference()
-        updateHideLauncherIconSwitchState()
+        updateLauncherIconSwitchState()
         updateGcmSummary()
         updateCheckinSummary()
         updateDynamicEntries()
@@ -96,15 +107,16 @@ class SettingsFragment : ResourceSettingsFragment() {
             true
         }
         findPreference<SwitchPreferenceCompat>(PREF_HIDE_LAUNCHER_ICON)?.setOnPreferenceChangeListener { _, newValue ->
-            toggleActivityVisibility(MainSettingsActivity::class.java, !(newValue as Boolean))
+            val shouldHide = newValue as Boolean
+            toggleLauncherIconVisibility(hide = shouldHide)
             true
         }
-        findPreference<Preference>(PREF_DEVELOPER)?.setOnPreferenceClickListener {
-            openLink(getString(R.string.developer_link))
+        findPreference<Preference>(PREF_SELF_CHECK)?.setOnPreferenceClickListener {
+            findNavController().navigate(requireContext(), R.id.selfcheckFragment)
             true
         }
         findPreference<Preference>(PREF_GITHUB)?.setOnPreferenceClickListener {
-            openLink(getString(R.string.github_link))
+            openGithub()
             true
         }
         findPreference<Preference>(PREF_ABOUT)?.setOnPreferenceClickListener {
@@ -115,7 +127,7 @@ class SettingsFragment : ResourceSettingsFragment() {
 
     private fun updateAboutSummary() {
         findPreference<Preference>(PREF_ABOUT)?.summary = getString(
-            org.microg.tools.ui.R.string.about_version_str, AboutFragment.getSelfVersion(context)
+            R.string.about_version_str, AboutFragment.getAppVersion(context)
         )
     }
 
@@ -160,50 +172,34 @@ class SettingsFragment : ResourceSettingsFragment() {
 
     private fun requestIgnoringBatteryOptimizations() {
         val ctx = context ?: return
-        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-            data = "package:${ctx.packageName}".toUri()
-        }
-        try {
+        ForegroundServiceOemUtils.openBatteryOptimizationSettings(ctx) { intent ->
             requestIgnoreBatteryOptimizationLauncher.launch(intent)
-        } catch (_: ActivityNotFoundException) {
-            try {
-                val fallbackIntent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-                requestIgnoreBatteryOptimizationLauncher.launch(fallbackIntent)
-            } catch (e2: ActivityNotFoundException) {
-                Log.w(TAG, "Device does not support ignoring battery optimizations", e2)
-            }
         }
     }
 
-    private fun toggleActivityVisibility(activityClass: Class<*>, showActivity: Boolean) {
+    private fun toggleLauncherIconVisibility(hide: Boolean) {
+        val newState = if (hide) {
+            PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        } else {
+            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        }
+
         val ctx = context ?: return
-        val component = ComponentName(ctx, activityClass)
-        val newState = if (showActivity) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-        else PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+        val component = ComponentName(ctx, ACTIVITY_LAUNCHER_CONTROL)
+
         ctx.packageManager.setComponentEnabledSetting(
             component, newState, PackageManager.DONT_KILL_APP
         )
     }
 
-    private fun updateHideLauncherIconSwitchState() {
-        val isVisible = isIconActivityVisible(MainSettingsActivity::class.java)
-        findPreference<SwitchPreferenceCompat>(PREF_HIDE_LAUNCHER_ICON)?.isChecked = !isVisible
-    }
+    private fun updateLauncherIconSwitchState() {
+        val ctx = context ?: return
+        val component = ComponentName(ctx, ACTIVITY_LAUNCHER_CONTROL)
+        val state = ctx.packageManager.getComponentEnabledSetting(component)
 
-    private fun isIconActivityVisible(activityClass: Class<*>): Boolean {
-        val ctx = context ?: return false
-        val component = ComponentName(ctx, activityClass)
-        return when (ctx.packageManager.getComponentEnabledSetting(component)) {
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED -> true
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED -> false
-            else -> {
-                try {
-                    ctx.packageManager.getActivityInfo(component, 0).enabled
-                } catch (_: PackageManager.NameNotFoundException) {
-                    false
-                }
-            }
-        }
+        val isHidden = state != PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+
+        findPreference<SwitchPreferenceCompat>(PREF_HIDE_LAUNCHER_ICON)?.isChecked = isHidden
     }
 
     private fun updateGcmSummary() {
@@ -230,12 +226,11 @@ class SettingsFragment : ResourceSettingsFragment() {
         findPreference<Preference>(PREF_CHECKIN)?.setSummary(summaryRes)
     }
 
-
-    private fun openLink(url: String) {
+    private fun openGithub() {
         try {
-            startActivity(Intent(Intent.ACTION_VIEW, url.toUri()))
+            startActivity(Intent(Intent.ACTION_VIEW, PREF_GITHUB_URL.toUri()))
         } catch (e: ActivityNotFoundException) {
-            Log.e(TAG, "Error opening link: $url", e)
+            Log.e(TAG, "Error opening link: $PREF_GITHUB_URL", e)
         }
     }
 

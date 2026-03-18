@@ -6,7 +6,9 @@
 package org.microg.gms.ui
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle
@@ -18,11 +20,15 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.TwoStatePreference
 import com.google.android.gms.R
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.transition.platform.MaterialSharedAxis
+import com.google.android.material.transition.MaterialSharedAxis
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import android.widget.Toast
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.microg.gms.checkin.LastCheckinInfo
 import org.microg.gms.gcm.*
+import androidx.core.net.toUri
 
 class PushNotificationAdvancedFragment : PreferenceFragmentCompat() {
     private lateinit var confirmNewApps: TwoStatePreference
@@ -40,7 +46,7 @@ class PushNotificationAdvancedFragment : PreferenceFragmentCompat() {
         super.onCreate(savedInstanceState)
         database = GcmDatabase(context)
         enterTransition = MaterialSharedAxis(MaterialSharedAxis.X, true)
-        reenterTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
+        returnTransition = MaterialSharedAxis(MaterialSharedAxis.X, false)
     }
 
     override fun onPause() {
@@ -67,16 +73,27 @@ class PushNotificationAdvancedFragment : PreferenceFragmentCompat() {
         networkRoaming = preferenceScreen.findPreference(GcmPrefs.PREF_NETWORK_ROAMING) ?: networkRoaming
         networkOther = preferenceScreen.findPreference(GcmPrefs.PREF_NETWORK_OTHER) ?: networkOther
 
-        confirmNewApps.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-            val appContext = requireContext().applicationContext
-            lifecycleScope.launch {
-                if (newValue is Boolean) {
-                    setGcmServiceConfiguration(appContext, getGcmServiceInfo(appContext).configuration.copy(confirmNewApps = newValue))
+        confirmNewApps.onPreferenceChangeListener =
+            Preference.OnPreferenceChangeListener { _, newValue ->
+
+                val enable = newValue as Boolean
+                val appContext = requireContext().applicationContext
+
+                if (enable && !hasOverlayPermission()) {
+                    openOverlayPermissionSettings()
+                    return@OnPreferenceChangeListener false
                 }
-                updateContent()
+
+                lifecycleScope.launch {
+                    setGcmServiceConfiguration(
+                        appContext,
+                        getGcmServiceInfo(appContext).configuration.copy(confirmNewApps = enable)
+                    )
+                    updateContent()
+                }
+
+                true
             }
-            true
-        }
         networkMobile.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
             val appContext = requireContext().applicationContext
             lifecycleScope.launch {
@@ -118,28 +135,20 @@ class PushNotificationAdvancedFragment : PreferenceFragmentCompat() {
             true
         }
 
-        findPreference<Preference>("pref_push_notification_reset")?.setOnPreferenceClickListener {
-            AlertDialog.Builder(requireContext())
-                .setIcon(R.drawable.ic_unregister)
-                .setTitle(R.string.gcm_remove_registers_dialog_title)
-                .setMessage(R.string.gcm_remove_registers_dialog_message)
-                .setPositiveButton(android.R.string.ok) { _, _ ->
-                    lifecycleScope.launch {
-                        withContext(Dispatchers.IO) {
-                            database.resetDatabase()
-                        }
-                    }
-                }
-                .setNegativeButton(android.R.string.cancel, null)
-                .show()
-            true
-        }
+        findPreference<Preference>("pref_remove_all_registers")
+            ?.setOnPreferenceClickListener {
+                showRemoveRegistersDialog()
+                true
+            }
     }
 
     private suspend fun updateContent() {
         val appContext = requireContext().applicationContext
         val serviceInfo = getGcmServiceInfo(appContext)
-        confirmNewApps.isChecked = serviceInfo.configuration.confirmNewApps
+        val hasPermission = hasOverlayPermission()
+        val enabled = serviceInfo.configuration.confirmNewApps && hasPermission
+
+        confirmNewApps.isChecked = enabled
         networkMobile.value = serviceInfo.configuration.mobile.toString()
         networkMobile.summary = getSummaryString(serviceInfo.configuration.mobile, serviceInfo.learntMobileInterval)
         networkWifi.value = serviceInfo.configuration.wifi.toString()
@@ -148,6 +157,13 @@ class PushNotificationAdvancedFragment : PreferenceFragmentCompat() {
         networkRoaming.summary = getSummaryString(serviceInfo.configuration.roaming, serviceInfo.learntMobileInterval)
         networkOther.value = serviceInfo.configuration.other.toString()
         networkOther.summary = getSummaryString(serviceInfo.configuration.other, serviceInfo.learntOtherInterval)
+
+        if (serviceInfo.configuration.confirmNewApps && !hasPermission) {
+            setGcmServiceConfiguration(
+                appContext,
+                serviceInfo.configuration.copy(confirmNewApps = false)
+            )
+        }
     }
 
     private fun getSummaryString(value: Int, learnt: Int): String = when (value) {
@@ -165,5 +181,59 @@ class PushNotificationAdvancedFragment : PreferenceFragmentCompat() {
     companion object {
         @Suppress("unused")
         private val HEARTBEAT_PREFS = arrayOf(GcmPrefs.PREF_NETWORK_MOBILE, GcmPrefs.PREF_NETWORK_ROAMING, GcmPrefs.PREF_NETWORK_WIFI, GcmPrefs.PREF_NETWORK_OTHER)
+    }
+
+    private fun hasOverlayPermission(): Boolean {
+        return Settings.canDrawOverlays(requireContext())
+    }
+
+    private fun openOverlayPermissionSettings() {
+        val context = requireContext()
+        val intent = Intent(
+            Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:${context.packageName}".toUri()
+        )
+        startActivity(intent)
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showRemoveRegistersDialog() {
+        val dialog = AlertDialog.Builder(requireContext()).setIcon(R.drawable.ic_unregister)
+            .setTitle(R.string.gcm_remove_registers_dialog_title)
+            .setMessage(R.string.gcm_remove_registers_dialog_message)
+            .setPositiveButton(android.R.string.ok, null)
+            .setNegativeButton(android.R.string.cancel, null).create()
+
+        dialog.setOnShowListener {
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.isEnabled = false
+
+            var secondsLeft = 10
+            positiveButton.text = "${getString(android.R.string.ok)} ($secondsLeft)"
+            positiveButton.alpha = 0.6f
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                while (secondsLeft > 0) {
+                    delay(1_000)
+                    secondsLeft--
+                    positiveButton.text = "${getString(android.R.string.ok)} ($secondsLeft)"
+                }
+
+                positiveButton.text = getString(android.R.string.ok)
+                positiveButton.alpha = 1f
+                positiveButton.isEnabled = true
+                positiveButton.setOnClickListener {
+                    lifecycleScope.launch {
+                        withContext(Dispatchers.IO) {
+                            LastCheckinInfo.clear(requireContext())
+                            database.resetDatabase()
+                        }
+                        Toast.makeText(requireContext(), R.string.gcm_remove_registers_toast_message, Toast.LENGTH_SHORT).show()
+                    }
+                    dialog.dismiss()
+                }
+            }
+        }
+
+        dialog.show()
     }
 }

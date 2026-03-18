@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SPDX-FileCopyrightText: 2017 microG Project Team
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+<resources>
+    <!--App Names-->
+    <string name="gms_settings_name">ការកំណត់ microG</string>
+    <!--Authentication-->
+    <!--auth: headers-->
+    <string name="auth_add_account">បន្ថែមគណនី</string>
+    <string name="auth_sign_in">ចូលគណនី</string>
+    <string name="auth_just_a_sec">ចាំមួយភ្លែត…</string>
+    <string name="auth_sorry">អភ័យទោស…</string>
+    <!--auth: sign-->
+    <string name="signin_picker_title">ជ្រើសគណនី</string>
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <string name="signin_picker_subtitle">ដើម្បីបន្តទៅ %1$s</string>
+    <string name="signin_confirm_button_text">អនុញ្ញាត និងចែករំលែក</string>
+    <string name="signin_picker_add_account_label">បន្ថែមគណនីផ្សេងទៀត</string>
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <string name="signin_confirm_title">អនុញ្ញាតឱ្យបញ្ជាប់គណនីរបស់អ្នកទៅក្នុង %1$s</string>
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <string name="signin_subtext_sharing">ដើម្បីបន្ត microG នឹងចែករំលែកឈ្មោះ អាសយដ្ឋានអ៊ីមែល និងរូបប្រូហ្វាលនៃគណនី Google របស់អ្នកជាមួយ %1$s</string>
+    <!--auth: buttons-->
+    <!--auth: messages-->
+    <!--auth: notifications-->
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <!--Account Manager-->
+    <!--Google Cloud Messaging-->
+    <!--gcm: register dialogs-->
+    <!-- %1$s is an app name, such as "YouTube"? -->
+    <!--gcm: register messages infos-->
+    <!-- %1$s is a date time, such as  app name, such as "Yesterday, 02:20 PM" -->
+    <!-- %1$s is a date time, such as  app name, such as "Yesterday, 02:20 PM" -->
+    <!-- %1$s is a date time, such as  app name, such as "Yesterday, 02:20 PM" -->
+    <!--gcm: network states-->
+    <!-- %1$s is a date time, such as  app name, such as "Yesterday, 02:20 PM" -->
+    <!--gcm: network types entry's-->
+    <!--gcm: push notifications ping entry's-->
+    <!--gcm: ask push permission dialog-->
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <!--gcm: ask permission tos-->
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <!--Device Registration-->
+    <!--checkin: registration status-->
+    <!-- %1$s is a date time, such as  app name, such as "Yesterday, 02:20 PM" -->
+    <!--checkin: profile names types entry's-->
+    <string name="profile_name_user">ផ្ទាល់ខ្លួន៖ %s</string>
+    <string name="profile_name_auto">ស្វ័យប្រវត្តិ៖ %s</string>
+    <string name="profile_name_system">ប្រព័ន្ធ៖ %s</string>
+    <!--Self Check-->
+    <!--self check: categories-->
+    <string name="self_check_cat_system">ប្រព័ន្ធ</string>
+    <string name="self_check_cat_patched_apps">កម្មវិធីដែលបានបំណះ</string>
+    <string name="self_check_cat_gms_packages">កញ្ចប់ដែលបានដំឡើង</string>
+    <!--self check: patched apps-->
+    <string name="self_check_source_morphe">Morphe បំណះ</string>
+    <!-- %1$s is an app name, such as "Morphe" -->
+    <string name="self_check_patched_app_installed">កំពុងប្រតិបត្តិជាមួយ %1$s</string>
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <string name="self_check_action_download_morphe">ដោនឡូដ Morphe</string>
+    <!--self check: permission-->
+    <string name="self_check_name_notifications">ការជូនដំណឹងត្រូវបានអនុញ្ញាត</string>
+    <!--self check: system-->
+    <!--self check: signature-->
+    <!--self check: package-->
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <string name="self_check_name_app_installed">%1$s ត្រូវបានដំឡើង</string>
+    <!-- %1$s is an app name, such as "YouTube" -->
+    <!--Settings Preferences-->
+    <!--preferences: categories-->
+    <string name="prefcat_about">អំពីកម្មវិធីនេះ</string>
+    <!--preferences: account manager-->
+    <!--preferences: device registration-->
+    <!--preferences: cloud messaging-->
+    <!--preferences: privacy-->
+    <!--preferences: hide icon in launcher-->
+    <!--preferences: about-->
+    <!--Permissions-->
+    <!--Conditions-->
+</resources>

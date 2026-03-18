@@ -28,5 +28,5 @@
         android:maxLines="20"
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="?android:textColorSecondary"
-        tools:text="@string/pref_account_summary" />
+        tools:text="@string/pref_checkin_enable_summary" />
 </androidx.appcompat.widget.LinearLayoutCompat>

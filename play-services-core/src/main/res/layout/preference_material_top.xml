@@ -6,7 +6,7 @@
     android:layout_marginStart="?attr/listPreferredItemPaddingStart"
     android:layout_marginEnd="?attr/listPreferredItemPaddingEnd"
     android:layout_marginBottom="2dp"
-    android:background="@drawable/preference_background_top"
+    android:background="@drawable/about_background_top"
     android:clickable="true"
     android:focusable="true"
     android:padding="16dp">

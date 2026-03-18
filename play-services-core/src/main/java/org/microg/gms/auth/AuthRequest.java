@@ -68,8 +68,8 @@ public class AuthRequest extends HttpFormClient.Request {
     public boolean getAccountId;
     @RequestContent("ACCESS_TOKEN")
     public boolean isAccessToken;
-//    @RequestContent("droidguard_results")
-//    public String droidguardResults;
+    @RequestContent("droidguard_results")
+    public String droidguardResults;
     @RequestContent("has_permission")
     public boolean hasPermission;
     @RequestContent("add_account")
@@ -201,6 +201,11 @@ public class AuthRequest extends HttpFormClient.Request {
 
     public AuthRequest isAccessToken() {
         isAccessToken = true;
+        return this;
+    }
+
+    public AuthRequest droidguardResults(String droidguardResults) {
+        this.droidguardResults = droidguardResults;
         return this;
     }
 

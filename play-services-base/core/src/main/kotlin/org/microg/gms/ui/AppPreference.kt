@@ -15,7 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import org.microg.gms.base.core.R
-import java.util.Locale
+import org.microg.gms.utils.AppPatcherDetector
 
 abstract class AppPreference : Preference {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes)
@@ -39,12 +39,12 @@ abstract class AppPreference : Preference {
                 appVersion = null
             } else if (value != null) {
                 val pm = context.packageManager
-                title = value.loadLabel(pm) ?: value.packageName
+                title = value.loadLabel(pm)
                 icon = value.loadIcon(pm) ?: AppCompatResources.getDrawable(context, android.R.mipmap.sym_def_app_icon)
 
                 appVersion = try {
                     pm.getPackageInfo(value.packageName, 0)?.versionName
-                } catch (e: PackageManager.NameNotFoundException) {
+                } catch (_: PackageManager.NameNotFoundException) {
                     null
                 }
             }
@@ -66,7 +66,7 @@ abstract class AppPreference : Preference {
 
                 appVersion = try {
                     pm.getPackageInfo(value, 0)?.versionName
-                } catch (e: PackageManager.NameNotFoundException) {
+                } catch (_: PackageManager.NameNotFoundException) {
                     null
                 }
             }
@@ -76,39 +76,19 @@ abstract class AppPreference : Preference {
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
 
-        val packageNameTextView: TextView? = holder.itemView.findViewById(R.id.package_name)
-        val appVersionTextView: TextView? = holder.itemView.findViewById(R.id.version_name)
-        val appPatcherTextView: TextView? = holder.itemView.findViewById(R.id.patcher_name)
+        val packageNameTextView = holder.itemView.findViewById<TextView>(R.id.package_name)
+        val appVersionTextView = holder.itemView.findViewById<TextView>(R.id.version_name)
+        val appPatcherTextView = holder.itemView.findViewById<TextView>(R.id.patcher_name)
 
-        if (packageNameTextView != null && packageNameField != null) {
-            packageNameTextView.text = packageNameField
-        } else {
-            packageNameTextView?.text = ""
-        }
+        packageNameTextView?.text = packageNameField ?: ""
+        appVersionTextView?.text = appVersion ?: ""
 
-        if (appVersionTextView != null && appVersion != null) {
-            appVersionTextView.text = appVersion
-        } else {
-            appVersionTextView?.text = ""
-        }
-
-        val packageName = packageNameField.orEmpty().lowercase(Locale.ROOT)
-
-        val patcherText = when {
-            packageName.contains(".vanced.android") -> context.getString(R.string.vanced)
-            packageName.contains(".revanced.android") -> context.getString(R.string.revanced)
-            packageName.contains(".rvx.android") -> context.getString(R.string.revanced_extended)
-            packageName.contains(".rex.android") -> context.getString(R.string.youtube_advanced)
-            packageName.contains(".rve.android") -> context.getString(R.string.revanced_extended_rufusin)
-            packageName.contains("anddea.youtube") -> context.getString(R.string.revanced_extended_anddea)
-            packageName.contains("bill.youtube") -> context.getString(R.string.revanced_extended_anddea)
-            else -> ""
-        }
+        val patcherSource = AppPatcherDetector.getUsingPackageName(packageNameField)
 
         appPatcherTextView?.let {
-            if (patcherText.isNotEmpty()) {
+            if (patcherSource != null) {
+                it.text = context.getString(patcherSource)
                 it.visibility = View.VISIBLE
-                it.text = patcherText
             } else {
                 it.visibility = View.GONE
             }

@@ -2,22 +2,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/list_item_library"
-    style="?attr/listItemLayoutSegmentedStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="2dp"
-    android:background="@android:color/transparent">
+    android:layout_marginBottom="2dp">
 
-    <com.google.android.material.card.MaterialCardView
+    <com.google.android.material.listitem.ListItemCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:checkable="false"
         app:cardBackgroundColor="?attr/colorSurfaceContainer">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp">
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/icon"
@@ -33,8 +31,9 @@
                 android:id="@android:id/text1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:layout_marginStart="16dp"
+                android:maxLines="2"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 app:layout_constraintBottom_toTopOf="@android:id/text2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/icon"
@@ -46,7 +45,10 @@
                 android:id="@android:id/text2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:layout_marginTop="2dp"
+                android:ellipsize="marquee"
+                android:maxLines="10"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="?android:textColorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -54,5 +56,5 @@
                 app:layout_constraintTop_toBottomOf="@android:id/text1"
                 tools:text="Apache License 2.0, The Android Open Source Project." />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.listitem.ListItemCardView>
 </com.google.android.material.listitem.ListItemLayout>

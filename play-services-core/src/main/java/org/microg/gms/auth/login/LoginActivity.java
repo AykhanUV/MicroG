@@ -20,7 +20,6 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -30,9 +29,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +41,8 @@ import android.webkit.WebView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewClientCompat;
@@ -52,6 +51,7 @@ import androidx.webkit.WebViewFeature;
 import com.google.android.gms.R;
 
 import org.json.JSONArray;
+import org.microg.gms.accountsettings.ui.MainActivity;
 import org.microg.gms.auth.AuthConstants;
 import org.microg.gms.auth.AuthManager;
 import org.microg.gms.auth.AuthRequest;
@@ -65,8 +65,8 @@ import org.microg.gms.profile.Build;
 import org.microg.gms.profile.ProfileManager;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.Locale;
+import java.util.Objects;
 
 import static android.accounts.AccountManager.PACKAGE_NAME_KEY_LEGACY_NOT_VISIBLE;
 import static android.accounts.AccountManager.VISIBILITY_USER_MANAGED_VISIBLE;
@@ -94,8 +94,10 @@ public class LoginActivity extends AssistantActivity {
     private static final String EMBEDDED_SETUP_URL = "https://accounts.google.com/EmbeddedSetup";
     private static final String PROGRAMMATIC_AUTH_URL = "https://accounts.google.com/o/oauth2/programmatic_auth";
     private static final String GOOGLE_SUITE_URL = "https://accounts.google.com/signin/continue";
+    private static final String GOOGLE_SIGNUP_URL = "https://accounts.google.com/signup";
     private static final String MAGIC_USER_AGENT = " MinuteMaid";
     private static final String COOKIE_OAUTH_TOKEN = "oauth_token";
+    private static final int REQUEST_CODE_SIGNUP = 1001;
 
     private WebView webView;
     private String accountType;
@@ -117,6 +119,24 @@ public class LoginActivity extends AssistantActivity {
         authContent = (ViewGroup) findViewById(R.id.auth_content);
         ((ViewGroup) findViewById(R.id.auth_root)).addView(webView);
         webView.setWebViewClient(new WebViewClientCompat() {
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Log.d(TAG, "shouldOverrideUrlLoading: url: " + url);
+                Uri uri = Uri.parse(url);
+                String uriPath = uri.getPath();
+                if (uriPath != null && uriPath.contains("/signup")) {
+                    String biz = uri.getQueryParameter("biz");
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setPackage(GMS_PACKAGE_NAME);
+                    intent.putExtra("extra.url", biz != null ? GOOGLE_SIGNUP_URL + "?biz=" + biz : GOOGLE_SIGNUP_URL);
+                    startActivityForResult(intent, REQUEST_CODE_SIGNUP);
+                    return true;
+                }
+                return super.shouldOverrideUrlLoading(view, url);
+            }
+
             @Override
             public void onPageFinished(WebView view, String url) {
                 Log.d(TAG, "pageFinished: " + view.getUrl());
@@ -151,7 +171,7 @@ public class LoginActivity extends AssistantActivity {
         if (getIntent().hasExtra(EXTRA_TOKEN)) {
             if (getIntent().hasExtra(EXTRA_EMAIL)) {
                 AccountManager accountManager = AccountManager.get(this);
-                Account account = new Account(getIntent().getStringExtra(EXTRA_EMAIL), accountType);
+                Account account = new Account(Objects.requireNonNull(getIntent().getStringExtra(EXTRA_EMAIL)), accountType);
                 accountManager.addAccountExplicitly(account, getIntent().getStringExtra(EXTRA_TOKEN), null);
                 if (isAuthVisible(this) && SDK_INT >= 26) {
                     accountManager.setAccountVisibility(account, PACKAGE_NAME_KEY_LEGACY_NOT_VISIBLE, VISIBILITY_USER_MANAGED_VISIBLE);
@@ -162,8 +182,22 @@ public class LoginActivity extends AssistantActivity {
             }
         } else {
             setMessage(R.string.auth_before_connect);
-            setSpoofButtonText(R.string.brand_spoof_button);
+            setSpoofButtonText(R.string.auth_huawei_button);
             setNextButtonText(R.string.auth_sign_in);
+        }
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SIGNUP) {
+            webView.reload();
+        }
+    }
+
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (webView != null) {
+            updateWebViewTheme(this, webView);
         }
     }
 
@@ -179,8 +213,7 @@ public class LoginActivity extends AssistantActivity {
             }
             init();
         } else if (state == -1) {
-            setResult(RESULT_CANCELED);
-            finish();
+            loginCanceled();
         }
     }
 
@@ -197,22 +230,29 @@ public class LoginActivity extends AssistantActivity {
             }
             init();
         } else if (state == -1) {
-            setResult(RESULT_CANCELED);
-            finish();
+            loginCanceled();
         }
+    }
+
+    public void loginCanceled() {
+        Log.d(TAG, "loginCanceled: ");
+        setResult(RESULT_CANCELED);
+        if (response != null) {
+            response.onError(AccountManager.ERROR_CODE_CANCELED, "Canceled");
+        }
+        finishAndRemoveTask();
     }
 
     /** @noinspection deprecation*/
+    @SuppressLint("GestureBackNavigation")
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        if(response != null){
-            response.onError(AccountManager.ERROR_CODE_CANCELED, "Canceled");
-        }
+        loginCanceled();
     }
 
     private void init() {
-        setTitle(R.string.just_a_sec);
+        setTitle(R.string.auth_just_a_sec);
         setSpoofButtonText(null);
         setNextButtonText(null);
         View loading = getLayoutInflater().inflate(R.layout.login_assistant_loading, authContent, false);
@@ -229,24 +269,24 @@ public class LoginActivity extends AssistantActivity {
     }
 
     private static WebView createWebView(Context context) {
-        boolean systemIsDark = isSystemDarkTheme(context);
-
         WebView webView = new WebView(context);
         webView.setVisibility(View.INVISIBLE);
         webView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         webView.setBackgroundColor(Color.TRANSPARENT);
+        updateWebViewTheme(context, webView);
+        prepareWebViewSettings(context, webView.getSettings());
+        return webView;
+    }
 
+    @SuppressWarnings("deprecation")
+    private static void updateWebViewTheme(Context context, WebView webView) {
         // Apply dark theme to WebView based on system state
+        boolean systemIsDark = isSystemDarkTheme(context);
         if (Build.VERSION.SDK_INT >= 29) {
             if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
-                //noinspection deprecation
                 WebSettingsCompat.setForceDark(webView.getSettings(), systemIsDark ? WebSettingsCompat.FORCE_DARK_ON : WebSettingsCompat.FORCE_DARK_OFF);
             }
         }
-
-        prepareWebViewSettings(context, webView.getSettings());
-
-        return webView;
     }
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -279,12 +319,12 @@ public class LoginActivity extends AssistantActivity {
                 loadLoginPage();
             }
         } else {
-            showError(R.string.no_network_error_desc);
+            showError(R.string.auth_no_network_error_desc);
         }
     }
 
     private void showError(int errorRes) {
-        setTitle(R.string.sorry);
+        setTitle(R.string.auth_sorry);
         findViewById(R.id.progress_bar).setVisibility(View.INVISIBLE);
         setMessage(errorRes);
     }
@@ -300,6 +340,9 @@ public class LoginActivity extends AssistantActivity {
     private void loadLoginPage() {
         String tmpl = getIntent().hasExtra(EXTRA_TMPL) ? getIntent().getStringExtra(EXTRA_TMPL) : TMPL_NEW_ACCOUNT;
         webView.loadUrl(buildUrl(tmpl, Utils.getLocale(this)));
+        if (webView != null) {
+            updateWebViewTheme(this, webView);
+        }
     }
 
     protected void runScript(String js) {
@@ -329,6 +372,7 @@ public class LoginActivity extends AssistantActivity {
                 .token(oAuthToken).isAccessToken()
                 .addAccount()
                 .getAccountId()
+                .droidguardResults("null" /*TODO*/)
                 .getResponseAsync(new HttpFormClient.Callback<AuthResponse>() {
                     @Override
                     public void onResponse(AuthResponse response) {
@@ -389,6 +433,7 @@ public class LoginActivity extends AssistantActivity {
                 .hasPermission(true)
                 .addAccount()
                 .getAccountId()
+                .droidguardResults("null")
                 .getResponseAsync(new HttpFormClient.Callback<AuthResponse>() {
                     @Override
                     public void onResponse(AuthResponse response) {
@@ -401,7 +446,7 @@ public class LoginActivity extends AssistantActivity {
                         }
                         checkin(true);
                         returnSuccessResponse(account);
-                        finish();
+                        finishAndRemoveTask();
                     }
 
                     @Override
@@ -658,7 +703,7 @@ public class LoginActivity extends AssistantActivity {
         @JavascriptInterface
         public final void skipLogin() {
             Log.d(TAG, "JSBridge: skipLogin");
-            finish();
+            loginCanceled();
         }
 
         @JavascriptInterface

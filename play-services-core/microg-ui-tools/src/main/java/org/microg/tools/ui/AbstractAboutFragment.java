@@ -16,25 +16,27 @@
 
 package org.microg.tools.ui;
 
+import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.transition.platform.MaterialSharedAxis;
+import com.google.android.material.listitem.ListItemLayout;
+import com.google.android.material.transition.MaterialSharedAxis;
 
 import org.microg.tools.updater.UpdateChecker;
 
@@ -51,31 +53,31 @@ public abstract class AbstractAboutFragment extends Fragment {
 
     protected abstract void collectLibraries(List<Library> libraries);
 
-    public static Drawable getIcon(Context context) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            return Objects.requireNonNull(pm.getPackageInfo(context.getPackageName(), 0).applicationInfo).loadIcon(pm);
-        } catch (PackageManager.NameNotFoundException e) {
-            // Never happens, self package always exists!
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String getAppName(Context context) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            CharSequence label = Objects.requireNonNull(pm.getPackageInfo(context.getPackageName(), 0).applicationInfo).loadLabel(pm);
-            if (TextUtils.isEmpty(label)) return context.getPackageName();
-            return label.toString().trim();
-        } catch (PackageManager.NameNotFoundException e) {
-            // Never happens, self package always exists!
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected String getAppName() {
-        return getAppName(requireContext());
-    }
+//    public static Drawable getIcon(Context context) {
+//        try {
+//            PackageManager pm = context.getPackageManager();
+//            return Objects.requireNonNull(pm.getPackageInfo(context.getPackageName(), 0).applicationInfo).loadIcon(pm);
+//        } catch (PackageManager.NameNotFoundException e) {
+//            // Never happens, self package always exists!
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    public static String getAppName(Context context) {
+//        try {
+//            PackageManager pm = context.getPackageManager();
+//            CharSequence label = Objects.requireNonNull(pm.getPackageInfo(context.getPackageName(), 0).applicationInfo).loadLabel(pm);
+//            if (TextUtils.isEmpty(label)) return context.getPackageName();
+//            return label.toString().trim();
+//        } catch (PackageManager.NameNotFoundException e) {
+//            // Never happens, self package always exists!
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    protected String getAppName() {
+//        return getAppName(requireContext());
+//    }
 
     public static String getLibVersion(String packageName) {
         try {
@@ -91,8 +93,6 @@ public abstract class AbstractAboutFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setEnterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, true));
-        setExitTransition(new MaterialSharedAxis(MaterialSharedAxis.X, true));
-        setReenterTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
         setReturnTransition(new MaterialSharedAxis(MaterialSharedAxis.X, false));
     }
 
@@ -102,12 +102,20 @@ public abstract class AbstractAboutFragment extends Fragment {
         view.setBackgroundColor(MaterialColors.getColor(view, android.R.attr.colorBackground));
     }
 
-    public static String getSelfVersion(Context context) {
-        return getLibVersion(BuildConfig.GMS_APPLICATION_NAMESPACE);
+    public static String getAppVersion() {
+        return BuildConfig.APP_VERSION_NAME;
     }
 
-    protected String getSelfVersion() {
-        return getSelfVersion(getContext());
+    public static String getGmsVersion() {
+        return BuildConfig.GMS_VERSION_NAME;
+    }
+
+    public static String getAppVersion(Context context) {
+        return getAppVersion();
+    }
+
+    public static String getGmsVersion(Context context) {
+        return getGmsVersion();
     }
 
     protected String getSummary() {
@@ -116,54 +124,74 @@ public abstract class AbstractAboutFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE) // (UpdateChecker) Added in core module manifest, solved when an apk is generated
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View aboutRoot = inflater.inflate(R.layout.about_root, container, false);
 
-        ((ImageView) aboutRoot.findViewById(android.R.id.icon)).setImageDrawable(getIcon(requireContext()));
-        ((TextView) aboutRoot.findViewById(android.R.id.title)).setText(getAppName());
-        ((TextView) aboutRoot.findViewById(R.id.about_version)).setText(getString(R.string.about_version_str, getSelfVersion()));
+        ViewGroup appCardContainer = aboutRoot.findViewById(R.id.app_card_container);
+        if (appCardContainer != null) {
+            View appCard = inflater.inflate(R.layout.about_app, appCardContainer, true);
+//            ((ImageView) appCard.findViewById(R.id.app_icon)).setImageDrawable(getIcon(requireContext()));
+//            ((TextView) appCard.findViewById(R.id.app_title)).setText(getAppName());
+            ((TextView) appCard.findViewById(R.id.app_version)).setText(appCard.getContext().getString(R.string.about_version_str, getAppVersion()));
 
-        String summary = getSummary();
-        if (summary != null) {
-            ((TextView) aboutRoot.findViewById(android.R.id.summary)).setText(summary);
-            aboutRoot.findViewById(android.R.id.summary).setVisibility(View.VISIBLE);
+            appCard.findViewById(R.id.app_check_updates).setOnClickListener(v -> {
+                new UpdateChecker(requireContext()).checkForUpdates(v, () -> {
+                });
+            });
+
+            View appInfo = appCard.findViewById(R.id.app_info);
+            if (appInfo != null) {
+                appInfo.setOnClickListener(v -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.parse("package:" + requireContext().getPackageName()));
+                    try {
+                        startActivity(intent);
+                    } catch (Exception ignored) {
+                    }
+                });
+            }
         }
+
+
 
         List<Library> libraries = new ArrayList<>();
         collectLibraries(libraries);
         Collections.sort(libraries);
 
         ViewGroup libraryContainer = aboutRoot.findViewById(R.id.library_container);
-        for (int i = 0; i < libraries.size(); i++) {
-            Library library = libraries.get(i);
+        if (libraryContainer != null) {
+            for (int i = 0; i < libraries.size(); i++) {
+                Library library = libraries.get(i);
+                View libraryView = inflater.inflate(R.layout.library_item, libraryContainer, false);
 
-            View libraryView = inflater.inflate(R.layout.library_item, libraryContainer, false);
+                TextView title = libraryView.findViewById(android.R.id.text1);
+                TextView subtitle = libraryView.findViewById(android.R.id.text2);
 
-            TextView title = libraryView.findViewById(android.R.id.text1);
-            TextView subtitle = libraryView.findViewById(android.R.id.text2);
+                title.setText(getString(R.string.about_name_version_str, library.name, getLibVersion(library.packageName)));
+                subtitle.setText(library.copyright != null ? library.copyright : getString(R.string.about_default_license));
 
-            title.setText(getString(R.string.about_name_version_str, library.name, getLibVersion(library.packageName)));
-            subtitle.setText(library.copyright != null ? library.copyright : getString(R.string.about_default_license));
+                ListItemLayout listItemLayout = libraryView.findViewById(R.id.list_item_library);
+                if (listItemLayout != null) {
+                    listItemLayout.updateAppearance(i, libraries.size());
+                }
 
-            com.google.android.material.listitem.ListItemLayout listItemLayout = libraryView.findViewById(R.id.list_item_library);
-            listItemLayout.updateAppearance(i, libraries.size());
-
-            libraryContainer.addView(libraryView);
+                libraryContainer.addView(libraryView);
+            }
         }
 
-        Button btnCheckUpdates = aboutRoot.findViewById(R.id.btnCheckUpdates);
-        btnCheckUpdates.setOnClickListener(v -> {
-            Context context = getContext();
-            if (context == null) return;
-            UpdateChecker updateChecker = new UpdateChecker(context);
-            updateChecker.checkForUpdates(v, () -> {
-            });
-        });
         return aboutRoot;
     }
 
-    private class LibraryAdapter extends ArrayAdapter<Library> {
+    private void openUrl(String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(intent);
+        } catch (Exception ignored) {
+        }
+    }
 
+    private class LibraryAdapter extends ArrayAdapter<Library> {
         public LibraryAdapter(Context context, Library[] libraries) {
             super(context, android.R.layout.simple_list_item_2, android.R.id.text1, libraries);
         }
@@ -178,10 +206,11 @@ public abstract class AbstractAboutFragment extends Fragment {
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     protected static class Library implements Comparable<Library> {
-        private final String packageName;
-        private final String name;
-        private final String copyright;
+        public final String packageName;
+        public final String name;
+        public final String copyright;
 
         public Library(String packageName, String name, String copyright) {
             this.packageName = packageName;

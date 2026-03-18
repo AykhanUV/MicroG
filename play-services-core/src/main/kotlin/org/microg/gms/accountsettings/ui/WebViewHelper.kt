@@ -14,6 +14,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import androidx.webkit.WebResourceErrorCompat
 import androidx.webkit.WebViewClientCompat
@@ -54,6 +55,17 @@ class WebViewHelper(private val activity: AppCompatActivity, private val webView
                         }
                     } catch (e: Exception) {
                         Log.w(TAG, "Error invoking intent", e)
+                    }
+                    return false
+                }
+                if (url.startsWith("sms:")) {
+                    try {
+                        val fixedUrl = url.replaceFirst("sms://", "sms:")
+                        val intent = Intent(Intent.ACTION_VIEW, fixedUrl.toUri())
+                        activity.startActivity(intent)
+                        return true
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Failed to open SMS", e)
                     }
                     return false
                 }

@@ -112,6 +112,10 @@ private val ALLOWED_WEB_PREFIXES = setOf(
     "https://policies.google.com/",
     "https://fit.google.com/privacy/settings",
     "https://maps.google.com/maps/timeline",
+    "https://myadcenter.google.com/controls",
+    "https://families.google.com/kidonboarding",
+    "https://profilewidgets.google.com/alternate-profile/edit",
+    "https://workspace.google.com/",
 )
 
 private val ACTION_TO_SCREEN_ID = hashMapOf(

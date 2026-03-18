@@ -12,7 +12,6 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.drawable.Icon;
-import android.net.Uri;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -22,7 +21,6 @@ import androidx.annotation.RequiresApi;
 import org.microg.gms.base.core.R;
 
 import static android.os.Build.VERSION.SDK_INT;
-import static android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS;
 
 public class ForegroundServiceContext extends ContextWrapper {
     private static final String TAG = "ForegroundService";
@@ -106,8 +104,7 @@ public class ForegroundServiceContext extends ContextWrapper {
         String secondLine = context.getString(R.string.foreground_service_notification_big_text, appTitle);
 
         // Open battery optimizations settings
-        @SuppressLint("BatteryLife") Intent batteryOptimizationIntent = new Intent(ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-                .setData(Uri.parse("package:" + context.getPackageName()));
+        Intent batteryOptimizationIntent = ForegroundServiceOemUtils.getBatteryOptimizationIntent(context);
 
         PendingIntent batteryPendingIntent = PendingIntent.getActivity(
                 context, 0, batteryOptimizationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE

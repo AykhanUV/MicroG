@@ -103,11 +103,10 @@ android {
         }
     }
 
-
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -151,6 +150,6 @@ if (file('user.gradle').exists()) {
 
 android.applicationVariants.configureEach { variant ->
     variant.outputs.each { output ->
-        output.outputFileName = variant.applicationId + "-" + variant.versionCode + variant.versionName.substring(version.length()) + ".apk"
+        output.outputFileName = "microg-${variant.buildType.name}-${appVersionName}.apk"
     }
 }

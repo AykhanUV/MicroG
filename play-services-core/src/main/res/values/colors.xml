@@ -22,9 +22,6 @@
 
     <!--ui components-->
 
-    <color name="dialog_border_color">#88CCCCCC</color>
-    <color name="material_error">#BA1A1A</color>
-
     <!--material colors-->
 
     <color name="md_theme_primary">#435E91</color>

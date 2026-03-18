@@ -18,7 +18,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/permission_message"
-        style="?attr/textAppearanceTitleLarge"
+        style="?attr/textAppearanceHeadlineSmall"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="18dp"
@@ -31,9 +31,9 @@
         app:layout_constraintTop_toBottomOf="@id/application_icon"
         tools:text="@string/gcm_allow_app_popup" />
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
+    <com.google.android.material.button.MaterialButtonGroup
         android:id="@+id/button_group"
-        style="@style/Widget.Material3.MaterialButtonToggleGroup"
+        style="@style/Widget.Material3.MaterialButtonGroup.Connected"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -41,8 +41,7 @@
         android:spacing="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/permission_message"
-        app:singleSelection="true">
+        app:layout_constraintTop_toBottomOf="@id/permission_message">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_allow"
@@ -55,7 +54,6 @@
             android:minHeight="60dp"
             android:textColor="?attr/colorOnPrimaryContainer"
             app:backgroundTint="?attr/colorPrimaryContainer"
-            app:cornerRadius="16dp"
             tools:text="@string/allow" />
 
         <com.google.android.material.button.MaterialButton
@@ -69,10 +67,8 @@
             android:minHeight="60dp"
             android:textColor="?attr/colorOnPrimaryContainer"
             app:backgroundTint="?attr/colorPrimaryContainer"
-            app:cornerRadius="16dp"
             tools:text="@string/deny" />
-
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+    </com.google.android.material.button.MaterialButtonGroup>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/migrog_logo"

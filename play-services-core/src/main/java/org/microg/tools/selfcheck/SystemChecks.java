@@ -19,21 +19,25 @@ package org.microg.tools.selfcheck;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.PowerManager;
-import android.provider.Settings;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.R;
 
+import org.microg.gms.common.ForegroundServiceOemUtils;
+import org.microg.tools.ui.AbstractSelfCheckFragment;
+import org.microg.tools.ui.AbstractSelfCheckFragment.ChipInfo;
+
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Negative;
 import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Positive;
+import static org.microg.tools.selfcheck.SelfCheckGroup.Result.Unknown;
+
+import java.util.Collections;
 
 @TargetApi(23)
-public class SystemChecks implements SelfCheckGroup, SelfCheckGroup.CheckResolver {
-
-    public static final int REQUEST_IGNORE_BATTERY_OPTIMIZATIONS = 417;
+public class SystemChecks implements SelfCheckGroup {
 
     @Override
     public String getGroupName(Context context) {
@@ -43,19 +47,52 @@ public class SystemChecks implements SelfCheckGroup, SelfCheckGroup.CheckResolve
     @Override
     public void doChecks(Context context, ResultCollector collector) {
         isBatterySavingDisabled(context, collector);
+        alertOemBackgroundRestrictionLink(context, collector);
     }
 
     private void isBatterySavingDisabled(final Context context, ResultCollector collector) {
         PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        collector.addResult(context.getString(R.string.self_check_name_battery_optimizations),
-                pm.isIgnoringBatteryOptimizations(context.getPackageName()) ? Positive : Negative,
-                context.getString(R.string.self_check_resolution_battery_optimizations), this);
+        boolean isIgnoring = pm.isIgnoringBatteryOptimizations(context.getPackageName());
+
+        collector.addResult(
+                context.getString(R.string.self_check_name_battery_optimizations),
+                isIgnoring ? Positive : Negative,
+                context.getString(R.string.self_check_resolution_battery_optimizations),
+                true, null,
+                fragment -> {
+                    ForegroundServiceOemUtils.openBatteryOptimizationSettings(fragment.requireContext(), intent -> launch(fragment, intent));
+                });
     }
 
-    @Override
-    public void tryResolve(Fragment fragment) {
-        Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-        intent.setData(Uri.parse("package:" + fragment.getActivity().getPackageName()));
-        fragment.startActivityForResult(intent, REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+    private void alertOemBackgroundRestrictionLink(Context context, ResultCollector collector) {
+        String slug = ForegroundServiceOemUtils.getDkmaSlug();
+        if (!slug.isEmpty()) {
+            ChipInfo dkmaChip = new ChipInfo(
+                    "dontkillmyapp.com",
+                    ContextCompat.getDrawable(context, R.drawable.ic_self_check_open),
+                    v -> {
+                        Intent intent = ForegroundServiceOemUtils.getDkmaIntent(slug);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+            );
+
+            collector.addResult(
+                    context.getString(R.string.self_check_name_oem_restriction),
+                    Unknown,
+                    context.getString(R.string.self_check_resolution_oem_restriction),
+                    false,
+                    Collections.singletonList(dkmaChip),
+                    null
+            );
+        }
+    }
+
+    private void launch(Fragment fragment, Intent intent) {
+        if (fragment instanceof AbstractSelfCheckFragment) {
+            ((AbstractSelfCheckFragment) fragment).launchIntent(intent);
+        } else {
+            fragment.startActivity(intent);
+        }
     }
 }

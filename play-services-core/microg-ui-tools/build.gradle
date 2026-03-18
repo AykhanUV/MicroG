@@ -26,7 +26,8 @@ android {
         minSdkVersion androidMinSdk
         targetSdkVersion androidTargetSdk
 
-        buildConfigField "String", "GMS_APPLICATION_NAMESPACE", "\"$applicationNamespace\""
+        buildConfigField "String", "APP_VERSION_NAME", "\"${rootProject.ext.appVersionName}\""
+        buildConfigField "String", "GMS_VERSION_NAME", "\"GMS: ${rootProject.ext.baseVersion}\""
     }
 
     compileOptions {
